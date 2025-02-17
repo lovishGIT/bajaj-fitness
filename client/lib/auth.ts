@@ -90,17 +90,16 @@ export async function logout() {
     });
 }
 
-export async function verifyAuth(
-    token: string
-): Promise<AuthResponse> {
+export async function verifyAuth(): Promise<AuthResponse> {
     const res = await fetch(`${API_URL}/api/auth/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ token }),
     });
 
-    if (!res.ok) {
+    // console.log(res);
+
+    if (res.status == 200 || !res.ok) {
         throw new Error('Token verification failed');
     }
 

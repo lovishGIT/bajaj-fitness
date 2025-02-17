@@ -1,13 +1,18 @@
 'use client';
 import { usePoseLandmarker } from '@/hooks/usePoseLandMarker';
-import { useWebSocket } from '@/hooks/useWebScoket';
+import { useWebSocket } from '@/hooks/useWebSocket';
 import { useWebcam } from '@/hooks/useWebcam';
 import { Button } from '@/components/ui/button';
-import { PoseCanvas } from '@/components/AI/poseDetection';
+import { PoseCanvas } from '@/components/AI/PoseDetection';
 
 export const PoseLandmarkerComponent = () => {
-    const poseLandmarker = usePoseLandmarker();
-    const { videoRef, isWebcamOn, error, enableWebcam } = useWebcam();
+    const { poseLandmarker, error: poseError } = usePoseLandmarker();
+    const {
+        videoRef,
+        isWebcamOn,
+        error: webcamError,
+        enableWebcam,
+    } = useWebcam();
     const { isConnected, pushUpCount, sendLandmarks } = useWebSocket();
 
     const handleLandmarksDetected = (landmarks: any) => {
@@ -46,9 +51,9 @@ export const PoseLandmarkerComponent = () => {
                 Push-up Count: {pushUpCount}
             </div>
 
-            {error && (
+            {(webcamError || poseError) && (
                 <div className="absolute top-5 text-red-500">
-                    {error}
+                    {webcamError || poseError}
                 </div>
             )}
 

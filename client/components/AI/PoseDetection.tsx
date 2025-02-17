@@ -1,7 +1,10 @@
-// components/PoseCanvas.tsx
-import { useEffect, useRef } from 'react';
+'use client';
+import { useState, useEffect, useRef } from 'react';
 import { drawPose } from '@/components/AI/drawPose';
-import { PoseLandmarker } from '@mediapipe/tasks-vision';
+import {
+    PoseLandmarker,
+    PoseLandmarkerResult,
+} from '@mediapipe/tasks-vision';
 
 interface PoseCanvasProps {
     videoRef: React.RefObject<HTMLVideoElement | null>;
@@ -17,12 +20,17 @@ export const PoseCanvas = ({
     isWebcamOn,
 }: PoseCanvasProps) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [isVideoReady, setIsVideoReady] = useState(false);
 
     useEffect(() => {
-        if (!isWebcamOn) return;
+        if (!isWebcamOn || !poseLandmarker) return;
 
         let animationFrameId: number;
         const ctx = canvasRef.current?.getContext('2d');
+
+        const handleVideoMetadataLoaded = () => {
+            setIsVideoReady(true);
+        };
 
         const processFrame = async () => {
             if (
@@ -33,10 +41,26 @@ export const PoseCanvas = ({
             )
                 return;
 
-            const results = await poseLandmarker.detectForVideo(
-                videoRef.current,
-                performance.now()
-            );
+            const video = videoRef.current;
+
+            if (
+                !isVideoReady ||
+                video.videoWidth <= 0 ||
+                video.videoHeight <= 0
+            ) {
+                console.error('Invalid video dimensions');
+                return;
+            }
+
+            // Set canvas dimensions to match video dimensions
+            canvasRef.current.width = video.videoWidth;
+            canvasRef.current.height = video.videoHeight;
+
+            const results: PoseLandmarkerResult =
+                await poseLandmarker.detectForVideo(
+                    video,
+                    performance.now()
+                );
 
             ctx.clearRect(
                 0,
@@ -53,14 +77,29 @@ export const PoseCanvas = ({
             animationFrameId = requestAnimationFrame(processFrame);
         };
 
+        videoRef.current?.addEventListener(
+            'loadedmetadata',
+            handleVideoMetadataLoaded
+        );
+
         processFrame();
 
         return () => {
             if (animationFrameId) {
                 cancelAnimationFrame(animationFrameId);
             }
+            videoRef.current?.removeEventListener(
+                'loadedmetadata',
+                handleVideoMetadataLoaded
+            );
         };
-    }, [videoRef, poseLandmarker, isWebcamOn, onLandmarksDetected]);
+    }, [
+        videoRef,
+        poseLandmarker,
+        isWebcamOn,
+        onLandmarksDetected,
+        isVideoReady,
+    ]);
 
     return (
         <canvas
@@ -68,8 +107,6 @@ export const PoseCanvas = ({
             className={`absolute w-full h-full object-cover ${
                 isWebcamOn ? 'block' : 'hidden'
             }`}
-            width={500}
-            height={500}
         />
     );
 };

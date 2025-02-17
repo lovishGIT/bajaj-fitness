@@ -1,32 +1,35 @@
-// hooks/useWebcam.ts
-import { useRef, useState } from 'react';
+'use client';
+import { useEffect, useRef, useState } from 'react';
 
 export const useWebcam = () => {
-    const videoRef = useRef<HTMLVideoElement>(null);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
     const [isWebcamOn, setIsWebcamOn] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [stream, setStream] = useState<MediaStream | null>(null); // To store the stream
 
     const enableWebcam = async () => {
-        if (!navigator.mediaDevices?.getUserMedia) {
-            setError('Webcam not supported!');
-            return null;
+        if (
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+        ) {
+            setError('Webcam not supported on this device/browser');
+            return;
         }
 
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-            });
+            const newStream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                });
 
             if (videoRef.current) {
-                videoRef.current.srcObject = stream;
+                videoRef.current.srcObject = newStream;
+                setStream(newStream);
                 setIsWebcamOn(true);
-                return stream;
             }
         } catch (error) {
-            setError('Error accessing webcam');
-            console.error('Error accessing webcam: ', error);
+            setError('Failed to access webcam');
+            console.error(error);
         }
-        return null;
     };
 
     const disableWebcam = () => {
@@ -37,6 +40,16 @@ export const useWebcam = () => {
             setIsWebcamOn(false);
         }
     };
+
+
+    useEffect(() => {
+        return () => {
+            if (stream) {
+                const tracks = stream.getTracks();
+                tracks.forEach((track) => track.stop());
+            }
+        };
+    }, [stream]);
 
     return {
         videoRef,
