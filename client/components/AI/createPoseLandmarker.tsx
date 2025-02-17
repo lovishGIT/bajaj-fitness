@@ -1,68 +1,17 @@
 'use client';
-import React, { useRef, useState } from 'react';
 import { usePoseLandmarker } from '@/hooks/usePoseLandMarker';
-import { drawPose } from '@/components/AI/drawPose';
+import { useWebSocket } from '@/hooks/useWebScoket';
+import { useWebcam } from '@/hooks/useWebcam';
 import { Button } from '@/components/ui/button';
+import { PoseCanvas } from '@/components/AI/poseDetection';
 
 export const PoseLandmarkerComponent = () => {
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [videoOn, setVideoOn] = useState(false);
     const poseLandmarker = usePoseLandmarker();
+    const { videoRef, isWebcamOn, error, enableWebcam } = useWebcam();
+    const { isConnected, pushUpCount, sendLandmarks } = useWebSocket();
 
-    const enableWebcam = async () => {
-        if (!navigator.mediaDevices?.getUserMedia) {
-            console.error('Webcam not supported!');
-            return;
-        }
-
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-            });
-            setVideoOn(true);
-
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-                videoRef.current.onloadedmetadata = () => {
-                    videoRef.current?.play();
-                    detectPose(); // Start pose detection
-                };
-            }
-        } catch (error) {
-            console.error('Error accessing webcam: ', error);
-        }
-    };
-
-    const detectPose = async () => {
-        if (
-            !poseLandmarker ||
-            !videoRef.current ||
-            !canvasRef.current
-        )
-            return;
-
-        const ctx = canvasRef.current.getContext('2d');
-        if (!ctx) return;
-
-        const processFrame = async () => {
-            if (!videoRef.current || !poseLandmarker) return;
-
-            const results = await poseLandmarker.detectForVideo(
-                videoRef.current,
-                performance.now()
-            );
-
-            ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-
-            if (results.landmarks.length > 0) {
-                drawPose(ctx, results.landmarks[0]);
-            }
-
-            requestAnimationFrame(processFrame);
-        };
-
-        processFrame();
+    const handleLandmarksDetected = (landmarks: any) => {
+        sendLandmarks(landmarks);
     };
 
     return (
@@ -70,25 +19,44 @@ export const PoseLandmarkerComponent = () => {
             <video
                 ref={videoRef}
                 className={`${
-                    videoOn ? 'block' : 'hidden'
+                    isWebcamOn ? 'block' : 'hidden'
                 } absolute w-full h-full`}
                 autoPlay
                 playsInline
             />
-            <canvas
-                ref={canvasRef}
-                className={`${
-                    videoOn ? 'block' : 'hidden'
-                } absolute w-full h-full object-cover `}
-                width={500}
-                height={500}
+
+            <PoseCanvas
+                videoRef={videoRef}
+                poseLandmarker={poseLandmarker}
+                onLandmarksDetected={handleLandmarksDetected}
+                isWebcamOn={isWebcamOn}
             />
-            <Button
-                className={`${videoOn ? 'hidden' : 'block'} absolute`}
-                onClick={enableWebcam}
-            >
-                Enable Webcam
-            </Button>
+
+            {!isWebcamOn && (
+                <Button
+                    className="absolute"
+                    onClick={enableWebcam}
+                    disabled={!isConnected}
+                >
+                    Enable Webcam
+                </Button>
+            )}
+
+            <div className="absolute bottom-5 text-white">
+                Push-up Count: {pushUpCount}
+            </div>
+
+            {error && (
+                <div className="absolute top-5 text-red-500">
+                    {error}
+                </div>
+            )}
+
+            {!isConnected && (
+                <div className="absolute top-5 text-yellow-500">
+                    Connecting to server...
+                </div>
+            )}
         </div>
     );
 };

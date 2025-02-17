@@ -101,9 +101,9 @@ export async function verifyAuth(
     });
 
     if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || 'Token verification failed');
+        throw new Error('Token verification failed');
     }
 
-    return res.json();
+    const data = await res.json();
+    return data;
 }
