@@ -1,7 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { GOOGLE_CLIENT_ID } from '@/lib/auth-config';
-import { loginWithGoogle } from '@/lib/auth';
+import { loginWithGoogle, GOOGLE_CLIENT_ID } from '@/lib/auth';
 
 declare global {
     interface Window {

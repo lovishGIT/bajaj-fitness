@@ -1,4 +1,5 @@
-import { GOOGLE_CLIENT_ID, API_URL } from './auth-config';
+export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export interface AuthResponse {
     token: string;
@@ -89,7 +90,9 @@ export async function logout() {
     });
 }
 
-export async function verifyAuth(token: string): Promise<AuthResponse> {
+export async function verifyAuth(
+    token: string
+): Promise<AuthResponse> {
     const res = await fetch(`${API_URL}/api/auth/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -19,7 +19,7 @@ const env = cleanEnv(process.env, {
     }),
 }, {
     reporter: ({ errors }) => {
-        if (errors) console.error('Invalid env variables:', Object.keys(errors));
+        if (Object.keys(errors).length > 0) console.error('Invalid env variables:', Object.keys(errors));
     }
 });
 

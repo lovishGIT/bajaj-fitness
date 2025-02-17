@@ -10,7 +10,7 @@ export const registerController = async (
     try {
         const { email, password, isGuest, googleId, name } = req.body;
 
-        const user = new User({
+        const user = await User.create({
             email,
             password,
             isGuest,
@@ -18,17 +18,16 @@ export const registerController = async (
             name,
         });
 
-        await user.save();
-
         const token = generateToken({
             userId: user._id,
             email: user.email,
         });
 
-        return res.json({ token });
+        return res.status(201).json({ token });
     } catch (error) {
-        return res.status(400).json({
-            message: (error as Error).message,
+        console.warn((error as Error).message || error);
+        return res.status(500).json({
+            message: "Internal server error",
         });
     }
 };
