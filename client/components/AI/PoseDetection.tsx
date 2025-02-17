@@ -48,7 +48,6 @@ export const PoseCanvas = ({
                 video.videoWidth <= 0 ||
                 video.videoHeight <= 0
             ) {
-                console.error('Invalid video dimensions');
                 return;
             }
 
