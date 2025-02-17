@@ -1,7 +1,7 @@
 'use client';
 import React, { useRef, useState } from 'react';
 import { usePoseLandmarker } from '@/hooks/usePoseLandMarker';
-import { drawPose } from './drawPose';
+import { drawPose } from '@/components/AI/drawPose';
 import { Button } from '@/components/ui/button';
 
 export const PoseLandmarkerComponent = () => {
@@ -53,15 +53,10 @@ export const PoseLandmarkerComponent = () => {
                 performance.now()
             );
 
-            ctx.clearRect(
-                0,
-                0,
-                canvasRef.current.width,
-                canvasRef.current.height
-            );
+            ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 
             if (results.landmarks.length > 0) {
-                drawPose(ctx, results.landmarks[0]); // Draw skeleton
+                drawPose(ctx, results.landmarks[0]);
             }
 
             requestAnimationFrame(processFrame);
