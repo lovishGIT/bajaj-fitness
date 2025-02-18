@@ -20,7 +20,7 @@ export const PoseLandmarkerComponent = () => {
     };
 
     return (
-        <div className="relative w-[500px] h-[400px] border-2 rounded-xl flex justify-center items-center">
+        <div className="relative w-[500px] h-[400px] border-2 rounded-xl flex justify-center items-center overflow-hidden">
             <video
                 ref={videoRef}
                 className={`${
@@ -43,7 +43,7 @@ export const PoseLandmarkerComponent = () => {
                     onClick={enableWebcam}
                     disabled={!isConnected}
                 >
-                    Enable Webcam
+                    Give Access
                 </Button>
             )}
 
