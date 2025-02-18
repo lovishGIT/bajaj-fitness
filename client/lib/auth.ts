@@ -97,8 +97,6 @@ export async function verifyAuth(): Promise<AuthResponse> {
         credentials: 'include',
     });
 
-    // console.log(res);
-
     if (res.status == 200 || !res.ok) {
         throw new Error('Token verification failed');
     }
