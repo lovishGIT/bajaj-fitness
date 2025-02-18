@@ -1,6 +1,6 @@
 import WebSocket, { WebSocketServer } from 'ws';
 import { detectPushUp } from '@/utils/detectPushup.js';
-import { IncomingMessage, Server as HttpServer } from 'http';
+import { Server as HttpServer } from 'http';
 
 interface ParsedData {
     type: string;
@@ -18,7 +18,7 @@ export const initializeWebSocket = (server: HttpServer): WebSocketServer => {
         ws.on('message', (data: WebSocket.RawData) => {
             try {
                 const parsedData: ParsedData = JSON.parse(data.toString());
-                console.log('Received data:', parsedData);
+                // console.log('Received data:', parsedData);
 
                 if (parsedData.type === 'pushup' && parsedData.landmarks) {
                     const pushUpDetected = detectPushUp(parsedData.landmarks);
