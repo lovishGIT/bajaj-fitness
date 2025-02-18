@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth';
 
 export async function middleware(request: NextRequest) {
-    const protectedPaths = ['/activity-ai', '/exercise'];
+    const protectedPaths = ['/activity', '/profile', '/settings'];
 
     const path = request.nextUrl.pathname;
 
@@ -12,6 +12,12 @@ export async function middleware(request: NextRequest) {
         if (!verifyAuth()) {
             return NextResponse.redirect(
                 new URL('/auth')
+            );
+        }
+
+        if (path.startsWith('/activity')) {
+            return NextResponse.redirect(
+                new URL('/activity/pushups')
             );
         }
     }

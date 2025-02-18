@@ -49,7 +49,7 @@ export function Footer() {
                             <ul className="space-y-2">
                                 <li>
                                     <Link
-                                        href="/activity-ai"
+                                        href="/activity/pushups"
                                         className="text-sm text-muted-foreground hover:text-primary"
                                     >
                                         Activity AI
