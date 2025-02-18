@@ -8,16 +8,9 @@ export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
     if (protectedPaths.some((prefix) => path.startsWith(prefix))) {
-
         if (!verifyAuth()) {
             return NextResponse.redirect(
                 new URL('/auth')
-            );
-        }
-
-        if (path.startsWith('/activity')) {
-            return NextResponse.redirect(
-                new URL('/activity/pushups')
             );
         }
     }
