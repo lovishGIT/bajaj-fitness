@@ -75,8 +75,7 @@ export const detectPushUp = (landmarks: PoseLandmark[]): boolean => {
     const leftWrist = landmarks[15];
     const rightWrist = landmarks[16];
 
-    console.log('landmarks:', leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist);
-    // Check visibility of key landmarks
+    // console.log('landmarks:', leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist);
     const keyPoints = [
         leftShoulder,
         rightShoulder,

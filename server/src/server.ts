@@ -1,7 +1,6 @@
-// server.js
-import app from './app.js';
-import { connectDb } from './config/db.config.js';
-import env from './config/validateEnv.config.js';
+import app from '@/app.js';
+import { connectDb } from '@/config/db.config.js';
+import env from '@/config/validateEnv.config.js';
 import http from 'http';
 import { initializeWebSocket } from '@/config/webSocket.config.js';
 

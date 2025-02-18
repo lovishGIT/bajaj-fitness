@@ -30,7 +30,7 @@ const navItems: NavItem[] = [
     },
     {
         title: 'Activity AI',
-        href: '/activity-ai',
+        href: '/activity/pushups',
         requiresAuth: true,
     },
     {
