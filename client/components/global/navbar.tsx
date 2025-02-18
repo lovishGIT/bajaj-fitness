@@ -46,14 +46,18 @@ export function Navbar() {
     const handleLogout = () => {
         localStorage.removeItem('token');
         setIsLoggedIn(false);
+        setTimeout(() => {
+            window.location.href = '/auth';
+        }, 2000);
     };
 
     useEffect(() => {
+        setIsLoggedIn(false);
         const token = localStorage.getItem('token');
         if (token) {
             setIsLoggedIn(true);
         }
-    }, [pathname]);
+    }, [pathname, isLoggedIn]);
 
     return (
         <header className="px-4 sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 font-medium">

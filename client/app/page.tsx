@@ -21,25 +21,25 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
-    useEffect(() => {
-        document.title = 'Fitness Tracker | Home';
-        fetch('http://172.16.20.38:8000/generate/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                prompt: "What is advantages of pushups?"
-            }),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-    }, []);
+    // useEffect(() => {
+    //     document.title = 'Fitness Tracker | Home';
+    //     fetch('http://172.16.20.38:8000/generate/', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify({
+    //             prompt: "What is advantages of pushups?"
+    //         }),
+    //     })
+    //         .then((response) => response.json())
+    //         .then((data) => {
+    //             console.log(data);
+    //         })
+    //         .catch((error) => {
+    //             console.error('Error:', error);
+    //         });
+    // }, []);
     return (
         <>
             <section className="text-center py-20 my-20">

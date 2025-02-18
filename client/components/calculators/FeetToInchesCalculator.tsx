@@ -30,17 +30,21 @@ const FeetInchesCalculator = () => {
     };
 
     return (
-        <div className="p-6 border rounded-lg shadow-md">
+        <div
+            className="p-6 border rounded-lg shadow-md"
+            draggable="false"
+            aria-readonly="true"
+        >
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-semibold">
-                    {isFeetToCm
-                        ? 'Feet & Inches to CM'
-                        : 'CM to Feet & Inches'}
+                <h2 className="text-2xl font-semibold flex gap-3 items-center justify-center">
+                    <span className={isFeetToCm ? 'order-first' : 'order-last'}>{'Feet & Inches'}</span>
+                    <Switch
+                        className={`border-2 ${isFeetToCm ? 'border-black' : 'border-gray-400'}`}
+                        checked={isFeetToCm}
+                        onCheckedChange={handleSwitchChange}
+                    />
+                    <span className={isFeetToCm ? 'order-last' : 'order-first'}>{'CM'}</span>
                 </h2>
-                <Switch
-                    checked={isFeetToCm}
-                    onCheckedChange={handleSwitchChange}
-                />
             </div>
 
             {isFeetToCm ? (

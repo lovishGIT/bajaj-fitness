@@ -16,16 +16,10 @@ export default function BodyComposition() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div className="bg-white shadow-lg rounded-lg transform hover:scale-[1.01] transition-transform duration-300">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                        BMI Calculator
-                    </h2>
                     <BMICalculator />
                 </div>
 
                 <div className="bg-white shadow-lg rounded-lg transform hover:scale-[1.01] transition-transform duration-300">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                        Feet & Inches to CM
-                    </h2>
                     <FeetInchesCalculator />
                 </div>
 
