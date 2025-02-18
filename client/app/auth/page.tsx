@@ -1,7 +1,7 @@
 'use client';
-
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { GoogleLogin } from '@react-oauth/google';
 import {
     Tabs,
     TabsContent,
@@ -19,18 +19,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useGoogleLogin } from '@/hooks/handleGoogleLogin';
 import {
     loginWithEmail,
     registerWithEmail,
     loginAsGuest,
+    loginWithGoogle,
 } from '@/lib/auth';
 
 export default function AuthPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { handleGoogleLogin } = useGoogleLogin();
 
     const handleLogin = async (
         e: React.FormEvent<HTMLFormElement>
@@ -92,6 +91,16 @@ export default function AuthPage() {
         }
     };
 
+    const handleGoogleLoginSuccess = async (response: any) => {
+        try {
+            const token = await loginWithGoogle(response.credential);
+            localStorage.setItem('token', token);
+            window.location.href = '/';
+        } catch (error) {
+            console.error('Google Login Failed:', error);
+        }
+    };
+
     const handleGuestLogin = async () => {
         setIsLoading(true);
         setError(null);
@@ -100,7 +109,10 @@ export default function AuthPage() {
             if (!response) {
                 throw new Error('Guest login failed');
             }
-            router.push('/dashboard');
+            const token = response.token;
+            localStorage.setItem('token', token);
+            
+            router.push('/');
         } catch (error) {
             setError(
                 error instanceof Error
@@ -240,14 +252,14 @@ export default function AuthPage() {
                         </Button>
 
                         <div id="googleButton" className="w-full">
-                            <Button
-                                variant="outline"
-                                className="w-full"
-                                onClick={handleGoogleLogin}
-                                disabled={isLoading}
-                            >
-                                Sign in with Google
-                            </Button>
+                            <GoogleLogin
+                                onSuccess={handleGoogleLoginSuccess}
+                                onError={() =>
+                                    console.error(
+                                        'Google Login Failed'
+                                    )
+                                }
+                            />
                         </div>
                     </div>
                 </CardContent>

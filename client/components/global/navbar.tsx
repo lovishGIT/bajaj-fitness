@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -9,9 +9,8 @@ import {
     SheetContent,
     SheetTrigger,
 } from '@/components/ui/sheet';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, User, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 interface NavItem {
     title: string;
@@ -40,11 +39,24 @@ const navItems: NavItem[] = [
 ];
 
 export function Navbar() {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
     const pathname = usePathname();
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+    };
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            setIsLoggedIn(true);
+        }
+    }, [pathname]);
+
     return (
-        <header className="px-4 sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="px-4 sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 font-medium">
             <nav className="container flex h-16 items-center">
                 <div className="mr-4 hidden md:flex">
                     <Link
@@ -60,7 +72,7 @@ export function Navbar() {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                'px-4 py-2 text-sm font-medium transition-colors hover:text-primary',
+                                'px-4 py-2 text-sm transition-colors hover:text-primary',
                                 pathname === item.href
                                     ? 'text-foreground'
                                     : 'text-foreground/60'
@@ -99,7 +111,7 @@ export function Navbar() {
                                         key={item.href}
                                         href={item.href}
                                         className={cn(
-                                            'px-4 py-2 text-sm font-medium transition-colors hover:text-primary',
+                                            'px-4 py-2 text-sm transition-colors hover:text-primary',
                                             pathname === item.href
                                                 ? 'text-foreground'
                                                 : 'text-foreground/60'
@@ -124,16 +136,28 @@ export function Navbar() {
 
                 <div className="flex flex-1 items-center justify-end space-x-4">
                     <nav className="flex items-center space-x-2">
-                        <Link href="/auth">
+                        {isLoggedIn ? (
                             <Button
                                 variant="ghost"
                                 size="sm"
                                 className="px-4"
+                                onClick={handleLogout}
                             >
-                                <User className="h-5 w-5 mr-2" />
-                                Sign In
+                                <LogOut className="h-5 w-5 mr-2" />
+                                Sign Out
                             </Button>
-                        </Link>
+                        ) : (
+                            <Link href="/auth">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="px-4"
+                                >
+                                    <User className="h-5 w-5 mr-2" />
+                                    Sign In
+                                </Button>
+                            </Link>
+                        )}
                     </nav>
                 </div>
             </nav>

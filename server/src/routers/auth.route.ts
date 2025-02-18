@@ -6,6 +6,7 @@ const router = Router();
 
 router.post('/register', authController.registerController);
 router.post('/login', authController.loginController);
+router.post('/guest', authController.guestController);
 router.post('/logout', checkAuth, authController.logoutController);
 router.post('/refresh-token', checkAuth, authController.refreshTokenController);
 router.post('/verify', checkAuth, authController.verifyController);

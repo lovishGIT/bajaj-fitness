@@ -8,6 +8,7 @@ const env = cleanEnv(process.env, {
     }),
     PORT: str({ default: '4000' }),
     JWT_SECRET: str({ example: 'randomString' }),
+    GOOGLE_CLIENT_ID: str({ example: 'your-google-app-client-id' }),
     tokenExpiration: str({ default: '7d' }),
     FRONTEND_URL: str({
         default: 'http://localhost:3000',

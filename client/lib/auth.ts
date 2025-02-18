@@ -67,7 +67,7 @@ export async function loginAsGuest(): Promise<AuthResponse> {
 
 export async function loginWithGoogle(
     credential: string
-): Promise<AuthResponse> {
+): Promise<string> {
     const res = await fetch(`${API_URL}/api/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -80,8 +80,11 @@ export async function loginWithGoogle(
         throw new Error(error.message || 'Google login failed');
     }
 
-    return res.json();
+    const { token } = await res.json();
+    localStorage.setItem('authToken', token);
+    return token;
 }
+
 
 export async function logout() {
     await fetch(`${API_URL}/api/auth/logout`, {

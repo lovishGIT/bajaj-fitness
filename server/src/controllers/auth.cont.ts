@@ -69,6 +69,101 @@ export const loginController = async (
     }
 };
 
+export const guestController = async (
+    req: Request,
+    res: Response
+): Promise<Response> => {
+    try {
+        const user = await User.create({
+            email: "randomEmail@" + Date.now().toLocaleString() + ".com",
+            password: "randomPassword",
+            isGuest: true,
+        });
+
+        const token = generateToken({
+            _id: user._id,
+            email: user.email,
+        });
+
+        return res
+            .status(201)
+            .cookie('token', token, {
+                httpOnly: true,
+                secure: env.NODE_ENV === 'production',
+                sameSite: 'none',
+            })
+            .json({ token });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+};
+
+import { OAuth2Client } from 'google-auth-library';
+const client = new OAuth2Client(env.GOOGLE_CLIENT_ID);
+
+export const googleLoginController = async (
+    req: Request<{}, {}, { credential: string }>, // Expecting `credential`
+    res: Response
+): Promise<Response> => {
+    try {
+        const { credential } = req.body;
+
+        if (!credential) {
+            return res
+                .status(400)
+                .json({ message: 'Credential is required' });
+        }
+
+        // Verify and decode the Google JWT credential
+        const ticket = await client.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+
+        if (!payload) {
+            return res
+                .status(401)
+                .json({ message: 'Invalid Google credential' });
+        }
+
+        const { email, sub: googleId, name } = payload;
+
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            user = await User.create({ email, googleId, name });
+        } else {
+            user.googleId = googleId;
+            user.name = name;
+            await user.save();
+        }
+
+        const token = generateToken({
+            _id: user._id,
+            email: user.email,
+        });
+
+        return res
+            .status(200)
+            .cookie('token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'none',
+            })
+            .json({ token });
+    } catch (error) {
+        console.error('Google login error:', error);
+        return res
+            .status(500)
+            .json({ message: 'Internal server error' });
+    }
+};
+
+
 export const logoutController = async (
     req: Request,
     res: Response
